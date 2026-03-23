@@ -51,6 +51,7 @@ export default function DirectoryClient() {
         const db = requireDb();
         setError(null);
         setLoading(true);
+
         const [settingsSnap, businessSnap] = await Promise.all([
           getDoc(doc(db, "siteSettings", "public")),
           getDocs(collection(db, "businesses")),
@@ -84,7 +85,7 @@ export default function DirectoryClient() {
               }
               return {
                 ...record,
-                distanceMiles: haversineMiles(currentGeo!, {
+                distanceMiles: haversineMiles(currentGeo, {
                   lat: record.lat,
                   lng: record.lng,
                 }),
@@ -100,6 +101,7 @@ export default function DirectoryClient() {
 
         setItems(records);
       } catch (e: any) {
+        console.error("Directory load failed:", e);
         setError(e?.message ?? "Failed to load directory");
       } finally {
         setLoading(false);
@@ -167,6 +169,7 @@ export default function DirectoryClient() {
                 Use search, category filters, and distance controls to find businesses fast.
               </p>
             </div>
+
             <a
               href="/map"
               className="rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--primary)]"
@@ -181,6 +184,7 @@ export default function DirectoryClient() {
               setSearch={setSearch}
               placeholder="Search by name, category, neighborhood, or ZIP"
             />
+
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -190,6 +194,7 @@ export default function DirectoryClient() {
                 <option key={item}>{item}</option>
               ))}
             </select>
+
             <select
               value={radius}
               onChange={(e) => setRadius(Number(e.target.value))}
@@ -201,6 +206,7 @@ export default function DirectoryClient() {
                 </option>
               ))}
             </select>
+
             <input
               value={locationText}
               onChange={(e) => {
@@ -210,6 +216,7 @@ export default function DirectoryClient() {
               placeholder="Address or ZIP"
               className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm"
             />
+
             <button
               onClick={applyFilters}
               className="rounded-2xl bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white"
@@ -229,6 +236,7 @@ export default function DirectoryClient() {
           <p className="text-sm text-[var(--muted)]">
             {loading ? "Loading businesses…" : `${filtered.length} businesses found`}
           </p>
+
           <a href="/submit" className="text-sm font-semibold text-[var(--primary)]">
             Want your business listed? →
           </a>
